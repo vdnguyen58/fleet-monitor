@@ -11,9 +11,25 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/vdnguyen58/fleet-monitor/routes"
+	"github.com/vdnguyen58/fleet-monitor/storage"
 )
 
 func main() {
+	// Initialize device store
+	store := storage.NewDeviceStore()
+
+	// Load devices from CSV
+	csvPath := os.Getenv("DEVICES_CSV")
+	if csvPath == "" {
+		csvPath = "devices.csv" // Default path
+	}
+
+	if err := store.LoadDevicesFromCSV(csvPath); err != nil {
+		log.Fatalf("Failed to load devices from CSV: %v", err)
+	}
+
+	log.Println("Devices loaded successfully from CSV")
+
 	// Create Fiber app with custom configuration
 	app := fiber.New(fiber.Config{
 		AppName:      "Fleet Management Metrics Server",
@@ -27,7 +43,7 @@ func main() {
 	app.Use(cors.New())    // CORS
 
 	// Setup routes
-	routes.SetupRoutes(app)
+	routes.SetupRoutes(app, store)
 
 	// Health check endpoint
 	app.Get("/health", func(c *fiber.Ctx) error {
