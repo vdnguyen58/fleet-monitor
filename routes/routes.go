@@ -3,12 +3,13 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/vdnguyen58/fleet-monitor/handlers"
+	"github.com/vdnguyen58/fleet-monitor/storage"
 )
 
 // SetupRoutes configures all application routes
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App, store *storage.DeviceStore) {
 	// Initialize handlers
-	deviceHandler := handlers.NewDeviceHandler()
+	deviceHandler := handlers.NewDeviceHandler(store)
 
 	// API v1 group
 	api := app.Group("/api/v1")
