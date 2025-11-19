@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -15,20 +16,28 @@ import (
 )
 
 func main() {
+	// Define command-line flags
+	csvFlag := flag.String("csv", "", "Path to devices CSV file")
+	portFlag := flag.String("port", "", "Server port number")
+	flag.Parse()
+
 	// Initialize device store
 	store := storage.NewDeviceStore()
 
-	// Load devices from CSV
-	csvPath := os.Getenv("DEVICES_CSV")
+	// Determine CSV path: CLI flag > env var > default
+	csvPath := *csvFlag
 	if csvPath == "" {
-		csvPath = "devices.csv" // Default path
+		csvPath = os.Getenv("DEVICES_CSV")
+		if csvPath == "" {
+			csvPath = "devices.csv" // Default path
+		}
 	}
 
 	if err := store.LoadDevicesFromCSV(csvPath); err != nil {
 		log.Fatalf("Failed to load devices from CSV: %v", err)
 	}
 
-	log.Println("Devices loaded successfully from CSV")
+	log.Printf("Devices loaded successfully from: %s", csvPath)
 
 	// Create Fiber app with custom configuration
 	app := fiber.New(fiber.Config{
@@ -62,10 +71,13 @@ func main() {
 		_ = app.Shutdown()
 	}()
 
-	// Start server
-	port := os.Getenv("PORT")
+	// Determine port: CLI flag > env var > default
+	port := *portFlag
 	if port == "" {
-		port = "6733" // Default port from OpenAPI spec
+		port = os.Getenv("PORT")
+		if port == "" {
+			port = "6733" // Default port from OpenAPI spec
+		}
 	}
 
 	log.Printf("Starting server on port %s...", port)
