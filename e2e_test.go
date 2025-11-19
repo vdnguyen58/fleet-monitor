@@ -102,7 +102,9 @@ func TestE2E_PostHeartbeat_DeviceNotFound(t *testing.T) {
 
 	body, _ := io.ReadAll(resp.Body)
 	var notFoundResp models.NotFoundResponse
-	json.Unmarshal(body, &notFoundResp)
+	if err := json.Unmarshal(body, &notFoundResp); err != nil {
+		t.Fatalf("Failed to unmarshal response: %v", err)
+	}
 
 	if notFoundResp.Msg != "Device not found" {
 		t.Errorf("Expected 'Device not found', got '%s'", notFoundResp.Msg)
@@ -200,7 +202,9 @@ func TestE2E_GetStats_Success(t *testing.T) {
 		bodyBytes, _ := json.Marshal(heartbeat)
 		req := httptest.NewRequest("POST", "/api/v1/devices/"+deviceID+"/heartbeat", bytes.NewReader(bodyBytes))
 		req.Header.Set("Content-Type", "application/json")
-		app.Test(req)
+		if _, err := app.Test(req); err != nil {
+			t.Fatalf("Failed to send heartbeat: %v", err)
+		}
 	}
 
 	// Send some upload stats
@@ -213,7 +217,9 @@ func TestE2E_GetStats_Success(t *testing.T) {
 		bodyBytes, _ := json.Marshal(stats)
 		req := httptest.NewRequest("POST", "/api/v1/devices/"+deviceID+"/stats", bytes.NewReader(bodyBytes))
 		req.Header.Set("Content-Type", "application/json")
-		app.Test(req)
+		if _, err := app.Test(req); err != nil {
+			t.Fatalf("Failed to send stats: %v", err)
+		}
 	}
 
 	// Now get the stats
@@ -285,7 +291,9 @@ func TestE2E_GetStats_OnlyHeartbeats(t *testing.T) {
 	bodyBytes, _ := json.Marshal(heartbeat)
 	req := httptest.NewRequest("POST", "/api/v1/devices/"+deviceID+"/heartbeat", bytes.NewReader(bodyBytes))
 	req.Header.Set("Content-Type", "application/json")
-	app.Test(req)
+	if _, err := app.Test(req); err != nil {
+		t.Fatalf("Failed to send heartbeat: %v", err)
+	}
 
 	// Get stats
 	req = httptest.NewRequest("GET", "/api/v1/devices/"+deviceID+"/stats", nil)
@@ -300,7 +308,9 @@ func TestE2E_GetStats_OnlyHeartbeats(t *testing.T) {
 
 	body, _ := io.ReadAll(resp.Body)
 	var statsResp models.GetDeviceStatsResponse
-	json.Unmarshal(body, &statsResp)
+	if err := json.Unmarshal(body, &statsResp); err != nil {
+		t.Fatalf("Failed to unmarshal response: %v", err)
+	}
 
 	// Should have 100% uptime (single heartbeat)
 	if statsResp.Uptime != 100.0 {
@@ -325,7 +335,9 @@ func TestE2E_GetStats_OnlyUploadTimes(t *testing.T) {
 	bodyBytes, _ := json.Marshal(stats)
 	req := httptest.NewRequest("POST", "/api/v1/devices/"+deviceID+"/stats", bytes.NewReader(bodyBytes))
 	req.Header.Set("Content-Type", "application/json")
-	app.Test(req)
+	if _, err := app.Test(req); err != nil {
+		t.Fatalf("Failed to send stats: %v", err)
+	}
 
 	// Get stats
 	req = httptest.NewRequest("GET", "/api/v1/devices/"+deviceID+"/stats", nil)
@@ -340,7 +352,9 @@ func TestE2E_GetStats_OnlyUploadTimes(t *testing.T) {
 
 	body, _ := io.ReadAll(resp.Body)
 	var statsResp models.GetDeviceStatsResponse
-	json.Unmarshal(body, &statsResp)
+	if err := json.Unmarshal(body, &statsResp); err != nil {
+		t.Fatalf("Failed to unmarshal response: %v", err)
+	}
 
 	// Should have 0% uptime (no heartbeats)
 	if statsResp.Uptime != 0.0 {

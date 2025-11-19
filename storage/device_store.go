@@ -129,14 +129,10 @@ func (s *DeviceStore) GetDeviceData(deviceID string) (*DeviceData, error) {
 
 // Helper function to copy time slices
 func copySlice(dst, src []time.Time) {
-	for i, v := range src {
-		dst[i] = v
-	}
+	copy(dst, src)
 }
 
 // Helper function to copy int64 slices
 func copyInt64Slice(dst, src []int64) {
-	for i, v := range src {
-		dst[i] = v
-	}
+	copy(dst, src)
 }
