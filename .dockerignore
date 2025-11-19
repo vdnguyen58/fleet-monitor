@@ -1,0 +1,38 @@
+# Build artifacts
+bin/
+*.out
+*.test
+*.prof
+
+# Coverage reports
+coverage.out
+coverage.html
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+!README.md
+
+# Test files (we'll run tests before building)
+*_test.go
+
+# Makefile
+Makefile
+
+# Temporary files
+tmp/
+temp/
