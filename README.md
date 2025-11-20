@@ -4,6 +4,31 @@
 - Docker (optional, for containerized deployment)
 - Make (optional, for convenience commands)
 
+### TL;DR: How to run
+
+- Docker
+
+```bash
+docker run --rm -d --name fleet-monitor -p 6733:6733 ghcr.io/vdnguyen58/fleet-monitor:latest
+./device-simulator-linux-amd64
+docker stop fleet-monitor
+```
+
+- Binary: https://github.com/vdnguyen58/fleet-monitor/releases
+
+```bash
+./fleet-monitor-linux-amd64 -csv devices.csv
+./device-simulator-linux-amd64
+```
+
+- Source code
+
+```bash
+git clone https://github.com/vdnguyen58/fleet-monitor.git
+go mod download
+go run . -csv devices.csv
+```
+
 ### Running with Go
 
 ```bash
