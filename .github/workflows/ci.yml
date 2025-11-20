@@ -166,7 +166,7 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${{ github.sha }}"
+          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
           echo "Pulling image: ${IMAGE_TAG}"
           docker pull "${IMAGE_TAG}"
           docker tag "${IMAGE_TAG}" fleet-monitor:latest
