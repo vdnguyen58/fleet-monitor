@@ -134,6 +134,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -178,3 +179,46 @@ jobs:
         if: failure()
         run: |
           docker logs fleet-monitor-container || echo "No container logs available"
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f -name "fleet-monitor-*" -exec cp {} release-assets/ \;
+          ls -lah release-assets/
+
+      - name: Create/Update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}-${{ github.sha }}
+          name: Release ${{ github.ref_name }}-${{ github.sha }}
+          body: |
+            Automated release from commit ${{ github.sha }}
+
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+
+            ## Available Binaries
+            - Linux (AMD64, ARM64)
+            - macOS (AMD64, ARM64)
+            - Windows (AMD64)
+
+            ## Docker Images
+            - `docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${{ github.sha }}`
+            - `docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest`
+          files: release-assets/*
+          draft: false
+          prerelease: false
