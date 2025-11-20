@@ -181,12 +181,12 @@ func TestDocker_Heartbeat(t *testing.T) {
 		{
 			name:           "Multiple heartbeats for same device",
 			method:         "POST",
-			path:           apiV1 + "/devices/b4-45-52-a2-f1-3c/heartbeat",
+			path:           apiV1 + "/devices/aa-11-22-33-44-55/heartbeat",
 			body:           models.HeartbeatRequest{SentAt: time.Now()},
 			expectedStatus: 204,
 			setup: func(t *testing.T) {
 				// Send initial heartbeat
-				sendHeartbeats(t, "b4-45-52-a2-f1-3c", 1, time.Now().Add(-1*time.Minute))
+				sendHeartbeats(t, "aa-11-22-33-44-55", 1, time.Now().Add(-1*time.Minute))
 			},
 		},
 	}
@@ -267,13 +267,13 @@ func TestDocker_GetStats(t *testing.T) {
 		{
 			name:           "Get stats with heartbeats and upload times",
 			method:         "GET",
-			path:           apiV1 + "/devices/26-9a-66-01-33-83/stats",
+			path:           apiV1 + "/devices/bb-11-22-33-44-55/stats",
 			expectedStatus: 200,
 			setup: func(t *testing.T) {
 				// Send 5 heartbeats (1 per minute)
-				sendHeartbeats(t, "26-9a-66-01-33-83", 5, time.Now())
+				sendHeartbeats(t, "bb-11-22-33-44-55", 5, time.Now())
 				// Send upload stats: avg = 6s
-				sendUploadStats(t, "26-9a-66-01-33-83", []int64{
+				sendUploadStats(t, "bb-11-22-33-44-55", []int64{
 					3000000000,  // 3s
 					6000000000,  // 6s
 					9000000000,  // 9s

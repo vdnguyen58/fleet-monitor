@@ -124,6 +124,7 @@ docker-e2e: docker-build
 	@docker run -d \
 		--name $(DOCKER_CONTAINER_NAME) \
 		-p $(DOCKER_PORT):$(DOCKER_PORT) \
+		-v $(PWD)/devices_test.csv:/app/devices.csv \
 		$(DOCKER_IMAGE_NAME):latest
 	@echo "Waiting for container to be ready..."
 	@sleep 3
