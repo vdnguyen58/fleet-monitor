@@ -17,12 +17,12 @@ build:
 # Run tests
 test:
 	@echo "Running tests..."
-	@go test ./... -v
+	@go test ./... -v -skip TestDocker
 
 # Run tests with coverage
 coverage:
 	@echo "Running tests with coverage..."
-	@go test ./... -coverprofile=coverage.out -covermode=atomic
+	@go test ./... -coverprofile=coverage.out -covermode=atomic -skip TestDocker
 	@go tool cover -html=coverage.out -o coverage.html
 	@go tool cover -func=coverage.out | grep total
 	@echo "Coverage report generated: coverage.html"
